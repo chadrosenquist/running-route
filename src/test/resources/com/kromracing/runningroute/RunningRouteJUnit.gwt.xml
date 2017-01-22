@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="RunningRoute">
+  <!-- Inherit our applications main module.                      -->
+  <inherits name='com.kromracing.runningroute.RunningRoute' />
+
+  <!-- Specify the path to any remote services.                   -->
+  <servlet path="/RunningRoute/greet" class="com.kromracing.runningroute.server.GreetingServiceImpl" />
+
+</module>
