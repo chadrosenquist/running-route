@@ -1,0 +1,80 @@
+================================================================================================
+1.0
+================================================================================================
+
+- DEPLOYED Sunday August 7, 2011 
+
+================================================================================================
+1.1
+================================================================================================
+
+- DEPLOYED Sunday August 21, 2011
+
+- Fixed bug.  If the user clicks on route line, the web site starts working.  The root cause
+  is in MapClickHandler::onClick().  If the user clicks on an overlay, event.getLatLng()
+  returns null.  Use event.getOverlayLatLng() in that case.
+- Visual theme changed to Dark.
+
+================================================================================================
+1.2
+================================================================================================
+
+- DEPLOYED Saturday September 10, 2011
+
+- Fixed bug.  If the user loads a long route from a bookmark that has all follow roads,
+  Google will come back with the error: TOO_MANY_QUERIES (630).  This is because Google
+  has a limit to how many queries per second it will accept.  This limit is unknown.
+  The fix is if the add vertex queue size is >= 3, sleep for 50ms between requests
+  to Google.
+- Refactored enum ConnectionType into it's own file, reducing the size of RouteLine.java
+- The value of the Follow Road check box is saved in local storage/cookies.
+
+================================================================================================
+1.3
+================================================================================================
+
+- Works with IE 11 and Windows 7.
+- Ported to new version of GWT and Selenium.
+- When loading from a URL, Google times out after 12 "clicks".  The workaround fix is
+  RouteLine::setAsync::run() calls processAddVertexQueue() to keep processing.  Unfortunately,
+  the line that times out is never drawn.
+
+- DEPLOYED ?????
+
+================================================================================================
+2.0
+================================================================================================
+TO DO
+-----
+- edit lines
+
+- return route
+
+- directions
+    - what to do with straight line?
+    
+- Dialog Box
+
+- When RouteLine hits limit, display a warning.
+
+- Debug GWT Unit Test error on large line route
+
+- display mile markers
+
+- GWT Unit test for RouteLine    
+    1) Add a few follow roads
+    2) Add straight lines and follow roads   
+    3) Add, toString - follow roads
+    4) fromString - follow roads
+    
+- Save routes to local storage      
+  
+================================================================================================
+Notes
+================================================================================================
+- use debugger : Debug As, &gwt.codesvr=localhost:9997
+- MVP
+    M = RouteLine
+    V = RouteView (dumb)
+    P = RoutePresenter
+- IE9 : to clear cookies, F12
