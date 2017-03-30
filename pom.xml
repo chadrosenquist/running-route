@@ -7,17 +7,17 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.kromracing.runningroute</groupId>
   <artifactId>running-route</artifactId>
-  <packaging>war</packaging>
+  <!-- <packaging>war</packaging> -->
   <version>1.4-SNAPSHOT</version>
   <name>Running Route</name>
 
   <properties>
     <!-- Convenience property to set the GWT version -->
-    <gwtVersion>2.8.0</gwtVersion>
+    <gwtVersion>2.7.0</gwtVersion>
 
     <!-- GWT needs at least java 1.8 -->
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -36,20 +36,34 @@
 
   <dependencies>
     <dependency>
+	  <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <scope>provided</scope>
+      <version>${gwtVersion}</version>
+	</dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-codeserver</artifactId>
+      <scope>provided</scope>
+      <version>${gwtVersion}</version>
+    </dependency>
+
+    <!--
+    <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
       <scope>runtime</scope>
+      <version>${gwtVersion}</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
       <scope>provided</scope>
+      <version>${gwtVersion}</version>
     </dependency>
+    -->
 	<!--
 	<dependency>
 		<groupId>com.google.gwt.google-apis</groupId>
