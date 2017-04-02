@@ -18,5 +18,6 @@ For example:
 
 `target/running-route-1.4-SNAPSHOT/RunningRoute.html`
 
+
 `file:///D:/Git/running-route/target/running-route-1.4-SNAPSHOT/RunningRoute.html`
 
