@@ -8,6 +8,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.Maps;
 import com.google.gwt.maps.client.control.LargeMapControl3D;
@@ -15,9 +17,8 @@ import com.google.gwt.maps.client.control.MapTypeControl;
 import com.google.gwt.maps.client.control.ScaleControl;
 import com.google.gwt.maps.client.event.MapClickHandler;
 import com.google.gwt.maps.client.event.MapMoveEndHandler;
+import com.google.gwt.maps.client.event.MapTypeChangedHandler;
 import com.google.gwt.maps.client.event.MapZoomEndHandler;
-import com.google.gwt.maps.client.geocode.Geocoder;
-import com.google.gwt.maps.client.geocode.LatLngCallback;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -33,11 +34,14 @@ import com.google.gwt.user.client.ui.TextBox;
  * 
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class RunningRoute implements EntryPoint {
+public class RouteView implements EntryPoint {
     private static final int CONTROL_SIZE_PX = 40;
     private static final int HORIZONTAL_SPACING = 7;
     private static final int LOCATION_VISIBLE_LENGTH = 60;
     private static final String BUTTON_WIDTH = "14ex";
+    private static final String GOOGLE_MAPS_KEY
+        = "";
+        //= "ABQIAAAAV0P-MmOXteTr3dCPVKRxJxQy67il8HOl4_GYUn_xkFscugdkExSm5LkMJif35E7F2euhrdTMQA-6Kg";    
     
     private DockLayoutPanel dock;    
     
@@ -56,14 +60,10 @@ public class RunningRoute implements EntryPoint {
     private Label runningDistance;
     private Button undoButton;
     private Button newRouteButton;
-    private CheckBox followRoadCheckBox;
-    private Button serializeButton;
+    private CheckBox followRoadCheckBox;    
     
     // Used to map and manage the route.
-    private RouteBuilder routeBuilder;
-    
-    // Used to find a location.
-    private Geocoder geocoder;    
+    private RoutePresenter routePresenter;    
     
     // Handles cookies for RunningRoute
     private RouteCookies cookies;
@@ -72,15 +72,14 @@ public class RunningRoute implements EntryPoint {
     /**
      * This is the entry point method.
      */
-    public void onModuleLoad() {                
+    public void onModuleLoad() {     
+        cookies = new RouteCookies();
+        
         dock = new DockLayoutPanel(Unit.PX);
         RootLayoutPanel.get().add(dock);
                 
         moduleLoadLocationControls();
         moduleLoadManageControls();                       
-        
-        // Set focus to the location's input box.
-        locationInput.setFocus(true);  
         
         setSearchKeyboardAndMouse();               
         
@@ -91,7 +90,7 @@ public class RunningRoute implements EntryPoint {
          * application on a public server, but a blank key will work for an
          * application served from localhost.
          */
-        Maps.loadMapsApi("", "2", false, new Runnable() {
+        Maps.loadMapsApi(GOOGLE_MAPS_KEY, "2", false, new Runnable() {
             public void run() {
                 buildMapsUi();
             }
@@ -103,10 +102,10 @@ public class RunningRoute implements EntryPoint {
      */
     private void moduleLoadLocationControls() {
         // Create location controls.
-        locationLabel = new Label("Start Location"); 
+        locationLabel = new Label("Start Location");
         Utils.setId(locationLabel, "label-location");
         locationInput = new TextBox();
-        locationInput.setVisibleLength(LOCATION_VISIBLE_LENGTH);
+        locationInput.setVisibleLength(LOCATION_VISIBLE_LENGTH);       
         Utils.setId(locationInput, "textbox-location");
         locationSearch = new Button("Search");
         Utils.setId(locationSearch, "button-search");
@@ -118,7 +117,7 @@ public class RunningRoute implements EntryPoint {
         locationPanel.add(locationInput);
         locationPanel.add(locationSearch);  
         
-        dock.addNorth(locationPanel, CONTROL_SIZE_PX);  
+        dock.addNorth(locationPanel, CONTROL_SIZE_PX);        
     }   
     
     /**
@@ -131,7 +130,7 @@ public class RunningRoute implements EntryPoint {
         distanceLabel = new Label("Distance:");
         Utils.setId(distanceLabel, "label-distance-literal");
         runningDistance = new Label("");        
-        runningDistance.setWidth("130px");
+        runningDistance.setWidth("120px");
         Utils.setId(runningDistance, "label-distance");
         undoButton = new Button("  Undo   ");
         undoButton.setWidth(BUTTON_WIDTH);
@@ -140,19 +139,17 @@ public class RunningRoute implements EntryPoint {
         newRouteButton.setWidth(BUTTON_WIDTH);
         Utils.setId(newRouteButton, "button-new-route");
         followRoadCheckBox = new CheckBox("Follow Road");
-        Utils.setId(followRoadCheckBox, "checkbox-follow-road");
-        serializeButton = new Button("Serialize");
-        serializeButton.setWidth(BUTTON_WIDTH);
+        Utils.setId(followRoadCheckBox, "checkbox-follow-road");    
+        followRoadCheckBox.setValue(cookies.getMapFollowRoad());
         
-        // Add controls to a horizontal panel.
-        managePanel = new HorizontalPanel();
+        // Add controls to a horizontal panel.        
+        managePanel = new HorizontalPanel();     
         managePanel.setSpacing(HORIZONTAL_SPACING);
         managePanel.add(distanceLabel);
         managePanel.add(runningDistance);
+        managePanel.add(followRoadCheckBox);
         managePanel.add(undoButton);
         managePanel.add(newRouteButton);
-        managePanel.add(followRoadCheckBox);
-        managePanel.add(serializeButton);
         
         dock.addSouth(managePanel, CONTROL_SIZE_PX);
     }
@@ -166,7 +163,8 @@ public class RunningRoute implements EntryPoint {
         locationSearch.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                searchForLocation();                
+                if (routePresenter != null)
+                    routePresenter.searchForLocation(locationInput.getText());                
             }            
         });
         
@@ -175,45 +173,21 @@ public class RunningRoute implements EntryPoint {
             @Override
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-                    searchForLocation();
+                    if (routePresenter != null)
+                        routePresenter.searchForLocation(locationInput.getText());
                 }                  
             }            
         });        
-    }
+    }   
     
     /**
-     * This method uses the contents of locationInput to center the map.
-     * Uses the Geocoder class.
+     * Setup the Map and event handlers.
      */
-    private void searchForLocation() {
-        if (geocoder == null)
-            return;
-        
-        // Find the starting point.
-        geocoder.getLatLng(locationInput.getText(), new LatLngCallback() {
-            @Override
-            public void onFailure() {
-                Window.alert("The location '" + locationInput.getText() + "' was not found.");                
-            }
-
-            @Override
-            public void onSuccess(LatLng point) {                
-                // Move map to the point.
-                map.setCenter(point);
-            }           
-        });
-    }
-    
-    /**
-     * Setup the Map, event handlers, and Geocoder.
-     */
-    private void buildMapsUi() {
-        cookies = new RouteCookies();
-                
+    private void buildMapsUi() {                        
         setupMap();
         
         // Now that the map is created, it is okay to create RouteBuilder.
-        routeBuilder = new RouteBuilder(map, runningDistance);
+        routePresenter = new RoutePresenter(map, this);
         
         // Setup event handlers.
         setupMapEventHandlers();
@@ -221,10 +195,11 @@ public class RunningRoute implements EntryPoint {
         
         // Add the map to the dock panel last.
         // The map will take up the remaining space.
-        dock.add(map);   
+        dock.add(map);            
         
-        // Geocoder is used to search for a location.
-        geocoder = new Geocoder();        
+        // Set focus to the location's input box.
+        // FireFox requires the focus to be set after Google Maps has loaded up.
+        locationInput.setFocus(true);  
     }
 
     private void setupMap() {
@@ -232,6 +207,7 @@ public class RunningRoute implements EntryPoint {
         map = new MapWidget(cookies.getMapCenter(), cookies.getMapZoom());       
         map.setSize("100%", "100%");
         Utils.setId(map, "mapwidget-main");
+        map.setCurrentMapType(cookies.getMapType());
         
         // Add control for zoom level and allow mouse scroll wheel zooming.
         map.addControl(new LargeMapControl3D());   
@@ -249,7 +225,24 @@ public class RunningRoute implements EntryPoint {
         map.addMapClickHandler(new MapClickHandler() {
             @Override
             public void onClick(MapClickEvent event) {
-                routeBuilder.addNewPoint(event.getLatLng(), followRoadCheckBox.getValue());                
+                final LatLng mapLatLng = event.getLatLng();
+                final LatLng overlayLatLng = event.getOverlayLatLng();
+                LatLng latLng = null;
+                final boolean followRoad = followRoadCheckBox.getValue();
+                
+                /*
+                 * The user can either click on the map or click on an overlay on the map.
+                 * If the user clicks on an overlay, event.getLatLng() will return null.
+                 * In that case, use event.getOverlayLatLng() as the coordinates instead.
+                 */
+                if (mapLatLng != null)
+                    latLng = mapLatLng;             
+                else if (overlayLatLng != null)
+                    latLng = overlayLatLng;               
+                else
+                    throw new IllegalArgumentException("mapLatLng and overlayLatLng are null.  Cannot process the click.");               
+                
+                routePresenter.addNewPoint(latLng, followRoad);                
             }            
         });
         
@@ -257,8 +250,8 @@ public class RunningRoute implements EntryPoint {
         map.addMapMoveEndHandler(new MapMoveEndHandler() {
             @Override
             public void onMoveEnd(MapMoveEndEvent event) {
-                if (cookies != null)
-                    cookies.setMapCenter(map.getCenter());             
+                cookies.setMapCenter(map.getCenter()); 
+                routePresenter.updateBrowserUrl();
             }            
         });
         
@@ -266,9 +259,18 @@ public class RunningRoute implements EntryPoint {
         map.addMapZoomEndHandler(new MapZoomEndHandler() {
             @Override
             public void onZoomEnd(MapZoomEndEvent event) {
-                if (cookies != null)
-                    cookies.setMapZoom(map.getZoomLevel());                
+                cookies.setMapZoom(map.getZoomLevel());    
+                routePresenter.updateBrowserUrl();
             }            
+        });       
+        
+        // Any time the map type changes, save the map type.
+        map.addMapTypeChangedHandler(new MapTypeChangedHandler () {
+            @Override
+            public void onTypeChanged(MapTypeChangedEvent event) {
+                cookies.setMapType(map.getCurrentMapType());
+                
+            }
         });        
     }
     
@@ -277,7 +279,7 @@ public class RunningRoute implements EntryPoint {
         undoButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                routeBuilder.undo();                
+                routePresenter.undo();                
             }            
         });
         
@@ -285,24 +287,51 @@ public class RunningRoute implements EntryPoint {
         newRouteButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if (!routeBuilder.doesARouteExist())
-                    return;
-                
-                // First, make sure the user really wants to remove all the points.
-                if (Window.confirm("Start a new route?  The current route will be deleted."))                
-                    routeBuilder.newRoute();                
+                routePresenter.newRoute();              
             }            
         });   
         
-        // Serialize (remove later!)
-        serializeButton.addClickHandler(new ClickHandler() {
-
+        // Handler to save value of Follow Road in local storage.
+        followRoadCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
-            public void onClick(ClickEvent event) {
-                routeBuilder.serializeRoute();
-                
-            }
-            
+            public void onValueChange(ValueChangeEvent<Boolean> event) {                
+                cookies.setMapFollowRoad(event.getValue());
+            }            
         });
     }
+
+    /**
+     * Updates the distance label widget.
+     * @param distance distance to be displayed.
+     */
+    public void setDistance(final String distance) {
+        runningDistance.setText(distance);
+        
+    }
+    
+    /**
+     * Displays a popup dialog to the user with only one button.
+     * @param message Message the user will see.
+     */
+    public void alert(final String message) {
+        Window.alert(message);
+        /*
+        final DialogBox dialog = new DialogBox();
+        dialog.setText("START dklfajd l desf2304r eslofjaw r320rj elfj320 esflojdsf END");
+        final Button close = new Button("Close");
+        dialog.setWidget(close);                
+        dialog.center();
+        dialog.show();
+        */
+    }
+    
+    /**
+     * Displays a popup dialog asking Yes or No
+     * @param message Message the user will see.
+     * @return true if yes, false if no
+     */
+    public boolean confirm(final String message) {
+        return Window.confirm(message);
+    }    
+    
 }

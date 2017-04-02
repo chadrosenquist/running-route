@@ -1,0 +1,25 @@
+/** CSS rules for Running Route. */
+
+
+/** DialogBox Rules */
+.gwt-DialogBox { the outside of the dialog }
+.gwt-DialogBox .Caption { the caption }
+.gwt-DialogBox .dialogContent { the wrapper around the content }
+.gwt-DialogBox .dialogTopLeft { the top left cell }
+.gwt-DialogBox .dialogTopLeftInner { the inner element of the cell }
+.gwt-DialogBox .dialogTopCenter { the top center cell, where the caption is located }
+.gwt-DialogBox .dialogTopCenterInner { the inner element of the cell }
+.gwt-DialogBox .dialogTopRight { the top right cell }
+.gwt-DialogBox .dialogTopRightInner { the inner element of the cell }
+.gwt-DialogBox .dialogMiddleLeft { the middle left cell }
+.gwt-DialogBox .dialogMiddleLeftInner { the inner element of the cell }
+.gwt-DialogBox .dialogMiddleCenter { the middle center cell, where the content is located }
+.gwt-DialogBox .dialogMiddleCenterInner { the inner element of the cell }
+.gwt-DialogBox .dialogMiddleRight { the middle right cell }
+.gwt-DialogBox .dialogMiddleRightInner { the inner element of the cell }
+.gwt-DialogBox .dialogBottomLeft { the bottom left cell }
+.gwt-DialogBox .dialogBottomLeftInner { the inner element of the cell }
+.gwt-DialogBox .dialogBottomCenter { the bottom center cell }
+.gwt-DialogBox .dialogBottomCenterInner { the inner element of the cell }
+.gwt-DialogBox .dialogBottomRight { the bottom right cell }
+.gwt-DialogBox .dialogBottomRightInner { the inner element of the cell }

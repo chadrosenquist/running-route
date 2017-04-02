@@ -7,15 +7,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.kromracing.runningroute</groupId>
   <artifactId>running-route</artifactId>
-  <packaging>war</packaging>
+  <!-- <packaging>war</packaging> -->
   <version>1.4-SNAPSHOT</version>
-  <name>Maven Archetype for GWT</name>
+  <name>Running Route</name>
 
   <properties>
     <!-- Convenience property to set the GWT version -->
-    <gwtVersion>2.8.0</gwtVersion>
+    <gwtVersion>2.7.0</gwtVersion>
 
-    <!-- GWT needs at least java 1.7 -->
+    <!-- GWT needs at least java 1.8 -->
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
 
@@ -36,20 +36,58 @@
 
   <dependencies>
     <dependency>
+	  <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <scope>provided</scope>
+      <version>${gwtVersion}</version>
+	</dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-codeserver</artifactId>
+      <scope>provided</scope>
+      <version>${gwtVersion}</version>
+    </dependency>
+
+    <!--
+    <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
       <scope>runtime</scope>
+      <version>${gwtVersion}</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
       <scope>provided</scope>
+      <version>${gwtVersion}</version>
     </dependency>
+    -->
+	<!--
+	<dependency>
+		<groupId>com.google.gwt.google-apis</groupId>
+		<artifactId>gwt-maps</artifactId>
+		<version>3.8.0</version>
+	</dependency>
+	-->
+	<!-- GWT API can no longer be found online, so check it into Git. -->
+    <dependency>
+        <groupId>org.example</groupId>
+        <artifactId>iamajar</artifactId>
+        <version>1.0</version>
+        <scope>system</scope>
+        <systemPath>${project.basedir}/lib/gwt-maps.jar</systemPath>
+    </dependency>
+    <!-- GWT logging. -->
+    <dependency>
+      <groupId>org.allen_sauer</groupId>
+      <artifactId>gwtlog</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/gwt-log-3.3.2.jar</systemPath>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -59,6 +97,31 @@
   </dependencies>
 
   <build>
+
+    <!--  GWT COMPILE FAILS!! -->
+    <resources> 
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+        <targetPath>${project.basedir}/target/${artifactId}-${version}</targetPath>
+        <includes>
+          <include>RunningRoute.html</include>
+          <include>RunningRoute.css</include>
+	  <include>index.html</include>
+	  <include>favicon.ico</include>
+        </includes>
+      </resource>
+
+      <resource>
+	<filtering>true</filtering>
+        <directory>src/main/resources</directory> 
+	<targetPath>${project.basedir}/target/${artifactId}-${version}/WEB-INF/classes</targetPath>
+        <includes>
+	  <include>com/kromracing/runningroute/RunningRoute.gwt.xml</include>
+	</includes>
+      </resource>
+    </resources>
+
     <!-- Output classes directly into the webapp, so that IDEs and "mvn process-classes" update them in DevMode -->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
 
@@ -68,20 +131,22 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>2.8.0</version>
+        <version>${gwtVersion}</version>
         <executions>
           <execution>
             <goals>
+	      <goal>clean</goal>
               <goal>compile</goal>
-              <goal>test</goal>
-              <goal>generateAsync</goal>
+              <!-- <goal>test</goal> -->
+              <!-- <goal>generateAsync</goal> -->
             </goals>
           </execution>
         </executions>
         <!-- Plugin configuration. There are many available options, see 
           gwt-maven-plugin documentation at codehaus.org -->
         <configuration>
-          <runTarget>RunningRoute.html</runTarget>
+          <!-- <runTarget>RunningRoute.html</runTarget> -->
+	  <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
           <modules>
             <module>com.kromracing.runningroute.RunningRoute</module>
           </modules>

@@ -4,18 +4,18 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-
+  
   <!-- Servlets -->
   <servlet>
     <servlet-name>greetServlet</servlet-name>
     <servlet-class>com.kromracing.runningroute.server.GreetingServiceImpl</servlet-class>
   </servlet>
-
+  
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/RunningRoute/greet</url-pattern>
+    <url-pattern>/runningroute/greet</url-pattern>
   </servlet-mapping>
-
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>RunningRoute.html</welcome-file>
