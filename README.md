@@ -20,4 +20,3 @@ For example:
 
 `file:///D:/Git/running-route/target/running-route-1.4-SNAPSHOT/RunningRoute.html`
 
-
