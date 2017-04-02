@@ -97,15 +97,31 @@
   </dependencies>
 
   <build>
-	<!-- NOT NEEDED ANYMORE!
-  	<sourceDirectory>src</sourceDirectory>
-	<resources>
-		<resource>
-			<directory>src</directory>
-		</resource>
-	</resources>
-	-->
-  
+
+    <!--  GWT COMPILE FAILS!! -->
+    <resources> 
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+        <targetPath>${project.basedir}/target/${artifactId}-${version}</targetPath>
+        <includes>
+          <include>RunningRoute.html</include>
+          <include>RunningRoute.css</include>
+	  <include>index.html</include>
+	  <include>favicon.ico</include>
+        </includes>
+      </resource>
+
+      <resource>
+	<filtering>true</filtering>
+        <directory>src/main/resources</directory> 
+	<targetPath>${project.basedir}/target/${artifactId}-${version}/WEB-INF/classes</targetPath>
+        <includes>
+	  <include>com/kromracing/runningroute/RunningRoute.gwt.xml</include>
+	</includes>
+      </resource>
+    </resources>
+
     <!-- Output classes directly into the webapp, so that IDEs and "mvn process-classes" update them in DevMode -->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
 
