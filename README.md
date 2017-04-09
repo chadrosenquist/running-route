@@ -59,4 +59,17 @@ The files are located at:
 * Utils.java - Provides various utilities.
 
 # Tests
-TO DO
+The test files are located at:
+
+`src/test/java/com/kromracing/runningroute/client`
+
+## Unit Tests
+The unit tests test the Java classes in isolation.
+
+## GWT Integration Tests
+Uses the GWT test framework for testing.
+
+* RouteLineGWTTest.java - Currently disabled.
+
+## Selenium Tests
+The Selenium tests are in the [running-route-sel](https://github.com/chadrosenquist/running-route-sel) repository:
