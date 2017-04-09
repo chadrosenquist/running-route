@@ -103,7 +103,7 @@
       <resource>
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
-        <targetPath>${project.basedir}/target/${artifactId}-${version}</targetPath>
+        <targetPath>${project.basedir}/target/${project.artifactId}-${project.version}</targetPath>
         <includes>
           <include>RunningRoute.html</include>
           <include>RunningRoute.css</include>
@@ -115,7 +115,7 @@
       <resource>
 	<filtering>true</filtering>
         <directory>src/main/resources</directory> 
-	<targetPath>${project.basedir}/target/${artifactId}-${version}/WEB-INF/classes</targetPath>
+	<targetPath>${project.basedir}/target/${project.artifactId}-${project.version}/WEB-INF/classes</targetPath>
         <includes>
 	  <include>com/kromracing/runningroute/RunningRoute.gwt.xml</include>
 	</includes>
