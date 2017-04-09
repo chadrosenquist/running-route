@@ -1,6 +1,6 @@
 package com.kromracing.runningroute.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+//import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The async counterpart of <code>GreetingService</code>.
