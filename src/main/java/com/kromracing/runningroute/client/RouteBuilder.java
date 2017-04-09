@@ -8,12 +8,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.kromracing.runningroute.client.ConnectionType;
 
 /**
- * July 2011
- * 
  * This class is responsible for building and keeping track of the route.
  * It manages the route using the class RouteLine.  With the advent of
  * RouteLine, this class may no longer be necessary.  Consider
  * moving the functionality to RunningRoute.
+ * 
+ * TO DO: Move the handlers out of RouteLine and into this class.
+ * That way, RouteLine can just be the model.
  *
  */
 public class RouteBuilder implements RouteLineChangedHandler, RouteLineInvalidHandler,

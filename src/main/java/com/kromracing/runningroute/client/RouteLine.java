@@ -28,6 +28,10 @@ import com.google.gwt.user.client.Timer;
  * Similar to Polyline, but much more advanced.
  * Allows straight lines between points or following the road.
  * Allows the user to edit the lines.
+ * 
+ * TO DO: This class should only represent the route line as a model.
+ * The handlers should be moved to a different class because they
+ * modify the model.
  *
  */
 public class RouteLine {
