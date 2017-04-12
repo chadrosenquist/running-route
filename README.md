@@ -64,7 +64,7 @@ The test files are located at:
 `src/test/java/com/kromracing/runningroute/client`
 
 ## Unit Tests
-The unit tests test the Java classes in isolation.
+* ConnectionTypeTest.java - Tests enum ConnectionType.
 
 ## GWT Integration Tests
 Uses the GWT test framework for testing.
