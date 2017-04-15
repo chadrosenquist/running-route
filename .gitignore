@@ -30,3 +30,8 @@ www-test/
 war/
 target/
 
+# Eclipse
+.classpath
+.project
+.settings/
+

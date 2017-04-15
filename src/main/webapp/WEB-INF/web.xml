@@ -6,15 +6,7 @@
 <web-app>
   
   <!-- Servlets -->
-  <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>com.kromracing.runningroute.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/runningroute/greet</url-pattern>
-  </servlet-mapping>
+  <!-- None.  This website is purely on the client side. -->
   
   <!-- Default page to serve -->
   <welcome-file-list>

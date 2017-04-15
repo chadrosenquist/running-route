@@ -10,8 +10,6 @@ import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.user.client.History;
 
 /**
- * July 2011
- * 
  * This class is the Presenter.  It communicates between the model (RouteLine) and
  * the view (RouteView)
  *

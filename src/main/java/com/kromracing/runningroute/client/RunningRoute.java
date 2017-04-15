@@ -29,8 +29,6 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * July 2011
- * 
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class RunningRoute implements EntryPoint {
